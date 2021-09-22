@@ -1,5 +1,8 @@
 package bitway.model;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class CEP {
 
     private int id;
@@ -34,6 +37,16 @@ public class CEP {
         this.DDD = DDD;
         this.SIAFI = SIAFI;
         this.IBGE = IBGE;
+    }
+
+    public void CreateCSV(CEP c){
+        File file;
+        ArrayList<String> test = new ArrayList<>();
+        file = EasyCSV.CreateCSV("db.csv");
+
+        test.add(c.getCEP() + ", " + c.getCidade() + ", " + c.IBGE);
+
+        EasyCSV.WriteCSV(test, file);
     }
 
     public int getId() {

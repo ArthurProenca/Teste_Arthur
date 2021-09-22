@@ -70,6 +70,7 @@ public interface ControllerCEP {
             }
 
             CEP c = new CEP(1, localidade, logradouro, cep, complemento, bairro, uf, GIA, Integer.parseInt(DDD), Integer.parseInt(siafi), Integer.parseInt(IBGE));
+            c.CreateCSV(c);
 
             InputStream serviceAccount = new FileInputStream("src/Database/cep-bitway-firebase-adminsdk-ba1xe-3a73714aaa.json");
             GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
@@ -95,6 +96,7 @@ public interface ControllerCEP {
             data.put("id", 0);
             data.put("logradouro", c.getLogradouro());
             data.put("localidade", c.getCidade());
+
 
             //asynchronously write data
             ApiFuture<WriteResult> result = docRef.set(data);
