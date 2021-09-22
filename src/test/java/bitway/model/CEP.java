@@ -14,8 +14,8 @@ public class CEP {
     private String UF;
 
 
-    private Date DataPesquisa; //Stores when user searched
-    private int GIA;
+    //private Date DataPesquisa; //Stores when user searched
+    private String GIA;
     private int DDD;
     private int SIAFI;
     private int IBGE;
@@ -24,7 +24,7 @@ public class CEP {
     public CEP() {
     }
 
-    public CEP(long id, String cidade, String logradouro, String CEP, String complemento, String bairro, String UF, Date dataPesquisa, int GIA, int DDD, int SIAFI, int IBGE) {
+    public CEP(long id, String cidade, String logradouro, String CEP, String complemento, String bairro, String UF, String GIA, int DDD, int SIAFI, int IBGE) {
         this.id = id;
         this.cidade = cidade;
         this.logradouro = logradouro;
@@ -32,7 +32,6 @@ public class CEP {
         this.complemento = complemento;
         this.bairro = bairro;
         this.UF = UF;
-        DataPesquisa = dataPesquisa;
         this.GIA = GIA;
         this.DDD = DDD;
         this.SIAFI = SIAFI;
@@ -95,19 +94,11 @@ public class CEP {
         this.UF = UF;
     }
 
-    public Date getDataPesquisa() {
-        return DataPesquisa;
-    }
-
-    public void setDataPesquisa(Date dataPesquisa) {
-        DataPesquisa = dataPesquisa;
-    }
-
-    public int getGIA() {
+    public String getGIA() {
         return GIA;
     }
 
-    public void setGIA(int GIA) {
+    public void setGIA(String GIA) {
         this.GIA = GIA;
     }
 
