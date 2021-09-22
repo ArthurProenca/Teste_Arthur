@@ -51,9 +51,12 @@ public interface ControllerCEP {
             System.out.println("Type the street's name: ");
             Adress = in.nextLine();
             url = "https://viacep.com.br/ws/" + State + "/" + City + "/" + Adress + "/json/";
+
+
+
+        } else {
             System.out.println(Busca(url));
         }
-
     }
 
     static void SearchCEP() throws Exception {
