@@ -1,17 +1,27 @@
 package bitway.model;
 
-import com.fasterxml.jackson.core.JsonParser;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.core.ApiFuture;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.WriteResult;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 public interface ControllerCEP {
     static String Search(String typed_url) throws Exception {
@@ -34,44 +44,73 @@ public interface ControllerCEP {
         String aux = temp.replace("[", "");
         aux = aux.replace("]", "");
         aux = aux.replace(" ", "");
-        System.out.println(aux);
 
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode node = mapper.readTree(aux);
-             /*
-        "[
-            {
-                "cep": "37902-050",
-                "logradouro": "Rua Coelho Neto",
-                "complemento": "",
-                "bairro": "São Francisco",
-                "localidade": "Passos",
-                "uf": "MG",
-                "ibge": "3147907",
-                "gia": "",
-                "ddd": "35",
-                "siafi": "4957"
-             }
-         ]"
-         */
 
             String cep = node.get("cep").asText();
             String logradouro = node.get("logradouro").asText();
+            String complemento = node.get("complemento").asText();
             String bairro = node.get("bairro").asText();
             String localidade = node.get("localidade").asText();
             String uf = node.get("uf").asText();
             String IBGE = node.get("ibge").asText();
+            if(IBGE == ""){
+                IBGE = "0";
+            }
             String GIA = node.get("gia").asText();
             String DDD = node.get("ddd").asText();
+            if(DDD == ""){
+                DDD = "0";
+            }
             String siafi = node.get("siafi").asText();
+            if(siafi == ""){
+                siafi = "0";
+            }
 
-            System.out.println(DDD + " " + siafi + " " + localidade);
+            CEP c = new CEP(1, localidade, logradouro, cep, complemento, bairro, uf, GIA, Integer.parseInt(DDD), Integer.parseInt(siafi), Integer.parseInt(IBGE));
 
+            InputStream serviceAccount = new FileInputStream("src/Database/cep-bitway-firebase-adminsdk-ba1xe-3a73714aaa.json");
+            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(credentials)
+                    .build();
+            FirebaseApp.initializeApp(options);
+
+            Firestore db = FirestoreClient.getFirestore();
+
+            DocumentReference docRef = db.collection("CEP").document();
+
+            Map<String, Object> data = new HashMap<>();
+
+            data.put("CEP", c.getCEP());
+            data.put("DDD", c.getDDD());
+            data.put("GIA", c.getGIA());
+            data.put("IBGE", c.getIBGE());
+            data.put("SIAFI", c.getSIAFI());
+            data.put("UF", c.getUF());
+            data.put("bairro", c.getBairro());
+            data.put("complemento", c.getComplemento());
+            data.put("id", 0);
+            data.put("logradouro", c.getLogradouro());
+            data.put("localidade", c.getCidade());
+
+            //asynchronously write data
+            ApiFuture<WriteResult> result = docRef.set(data);
+            // ...
+            // result.get() blocks on response
+            System.out.println("Update time : " + result.get().getUpdateTime());
 
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -120,7 +159,7 @@ public interface ControllerCEP {
             String url = "https://viacep.com.br/ws/" + CEP + "/json/";
             Gson g = new Gson();
 
-            //CEP c = CreateInstance(g.toJson(Search(url)));
+            CreateInstance((Search(url)));
         } else {
             System.out.println("Invalid CEP, type a valid CEP." +
                     "\nA valid CEP are composed by IIIII-III, where 'I' are a number.");

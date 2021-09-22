@@ -1,10 +1,8 @@
 package bitway.model;
 
-import java.util.Date;
-
 public class CEP {
 
-    private long id;
+    private int id;
 
     private String cidade;
     private String logradouro;
@@ -24,7 +22,7 @@ public class CEP {
     public CEP() {
     }
 
-    public CEP(long id, String cidade, String logradouro, String CEP, String complemento, String bairro, String UF, String GIA, int DDD, int SIAFI, int IBGE) {
+    public CEP(int id, String cidade, String logradouro, String CEP, String complemento, String bairro, String UF, String GIA, int DDD, int SIAFI, int IBGE) {
         this.id = id;
         this.cidade = cidade;
         this.logradouro = logradouro;
@@ -38,7 +36,7 @@ public class CEP {
         this.IBGE = IBGE;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
